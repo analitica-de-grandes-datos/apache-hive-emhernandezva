@@ -32,6 +32,7 @@ LOAD DATA LOCAL INPATH 'data.tsv' INTO TABLE t0;
     >>> Escriba su respuesta a partir de este punto <<<
 */
 
+
 DROP TABLE IF EXISTS t0;
 CREATE TABLE t0 (
     c1 STRING,
@@ -45,12 +46,13 @@ CREATE TABLE t0 (
         LINES TERMINATED BY '\n';
 LOAD DATA LOCAL INPATH 'data.tsv' INTO TABLE t0;
 
-CREATE TABLE data AS
-SELECT letras, key, value
-FROM (SELECT letras, c3 FROM t0 LATERAL VIEW EXPLODE(c2) t0 AS letras) data1
-LATERAL VIEW EXPLODE(c3) data1;
 
-INSERT OVERWRITE LOCAL DIRECTORY './output'
+INSERT OVERWRITE DIRECTORY 'output'
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
-SELECT letras, key, COUNT(1)
-FROM data GROUP BY letras, key;
+SELECT letra, llave, COUNT(1)
+FROM (SELECT c1, letra, llave
+FROM t0
+LATERAL VIEW explode(c2) t1 AS letra
+LATERAL VIEW explode(c3) t2 AS llave,valor) b
+GROUP BY letra, llave
+;
