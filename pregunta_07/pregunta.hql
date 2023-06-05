@@ -3,8 +3,8 @@
 Pregunta
 ===========================================================================
 
-Escriba una consulta que retorne para cada valor único de la columna `t0.c2`, 
-los valores correspondientes de la columna `t0.c1`. 
+Escriba una consulta que retorne la columna `tbl0.c1` y el valor 
+correspondiente de la columna `tbl1.c4` para la columna `tbl0.c2`.
 
 Apache Hive se ejecutará en modo local (sin HDFS).
 
@@ -46,3 +46,10 @@ LOAD DATA LOCAL INPATH 'data1.csv' INTO TABLE tbl1;
     >>> Escriba su respuesta a partir de este punto <<<
 */
 
+CREATE TABLE valor_unico AS SELECT c2, c1 FROM tbl0;
+
+INSERT OVERWRITE LOCAL DIRECTORY './output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+COLLECTION ITEMS TERMINATED BY ':'
+
+SELECT c2, collect_set(c1) FROM valor_unico GROUP BY c2;
